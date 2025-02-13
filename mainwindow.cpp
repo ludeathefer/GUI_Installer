@@ -7,7 +7,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QDebug>
-#include<QString>
+#include <QString>
+#include <QWidget>
+#include <QStack>
 
 
 void populatePartitionTree(QTreeWidget *treeWidget, QString disk) {
@@ -70,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->lineEdit_4, &QLineEdit::textChanged, this, &MainWindow::checkPasswordMatch);
     connect(ui->lineEdit_5, &QLineEdit::textChanged, this, &MainWindow::checkPasswordMatch);
     // connect(ui->radioButton_4, &QRadioButton::toggled, this, &MainWindow::checkAccount);
-    connect(ui->comboBox, &QComboBox::currentTextChanged, this, &MainWindow::installationSelectedUpdateTerminal);
+   // connect(ui->comboBox, &QComboBox::currentTextChanged, this, &MainWindow::installationSelectedUpdateTerminal);
 
     connect(ui->radioButton_5, &QRadioButton::toggled, this, &MainWindow::checkAgreed);
 
@@ -81,8 +83,10 @@ MainWindow::MainWindow(QWidget *parent)
     // commandWindow->resize(600, 400);
     // commandWindow->show();
     script << "GUI_Installer/build/abc.sh";
-
+    consolePage = ui->page_7;
 }
+
+
 
 MainWindow::~MainWindow()
 {
@@ -132,8 +136,9 @@ void MainWindow::on_toolButton_6_clicked()
     qDebug() << "Aba chalxa!";
     QProcess *process = new QProcess(this);
 
-    connect(process, &QProcess::readyReadStandardOutput, [process]() {
-         qDebug() << qPrintable(process->readAllStandardOutput());
+    connect(process, &QProcess::readyReadStandardOutput, [process, this]() {
+        qDebug() << qPrintable(process->readAllStandardOutput());
+        ui->textEdit_2->setText(process->readAllStandardOutput());
     });
 
     process->start("bash", script);
@@ -334,20 +339,102 @@ void MainWindow::saveUserInfo(const QString &name, const QString &computerName,
     }
 }
 
-void MainWindow::installationSelectedUpdateTerminal(){
+// void MainWindow::installationSelectedUpdateTerminal(){
+//     if(ui->comboBox->currentText() == "Normal Installation with a GUI")
+//     {
+//         //GUI wala script
+//         ui->textEdit->setText("pacman -S base xorg plasma");
+//     }
+//     else if(ui->comboBox->currentText() == "Normal Installation with a GUI and some Utilities")
+//     {
+//         //GUI ra bloatware wala script
+//         ui->textEdit->setText("pacman -S base xorg plasma kde-applications");
+//     }
+//     else
+//     {
+//         //Minimal installation ko script
+//         ui->textEdit->setText("pacman -S base");
+//     }
+// }
+
+void MainWindow::on_toolButton_24_clicked()//console ko back
+{
+    ui->textEdit_2->clear();
+    if (!pageHistory.isEmpty()) {
+        QWidget* previousPage = pageHistory.pop();
+        ui->stackedWidget->setCurrentWidget(previousPage);
+    }
+}
+
+
+void MainWindow::on_toolButton_23_clicked()
+{
+    //Time zone ko
+    ui->textEdit_2->setText("hello \n Hello");
+    QWidget* currentWidget = ui->stackedWidget->currentWidget();
+    if (currentWidget != consolePage) {
+        pageHistory.push(currentWidget);
+        ui->stackedWidget->setCurrentWidget(consolePage);
+    }
+}
+
+
+void MainWindow::on_toolButton_22_clicked()
+{
+    //Create account ko console
+    QWidget* currentWidget = ui->stackedWidget->currentWidget();
+    if (currentWidget != consolePage) {
+        pageHistory.push(currentWidget);
+        ui->stackedWidget->setCurrentWidget(consolePage);
+    }
+}
+
+
+void MainWindow::on_toolButton_18_clicked()
+{
+    //Partition ko console
+    QWidget* currentWidget = ui->stackedWidget->currentWidget();
+    if (currentWidget != consolePage) {
+        pageHistory.push(currentWidget);
+        ui->stackedWidget->setCurrentWidget(consolePage);
+    }
+}
+
+
+void MainWindow::on_toolButton_17_clicked()
+{
+    //How do you want to install arch ko console
+    QWidget* currentWidget = ui->stackedWidget->currentWidget();
+    if (currentWidget != consolePage) {
+        pageHistory.push(currentWidget);
+        ui->stackedWidget->setCurrentWidget(consolePage);
+    }
+}
+
+
+void MainWindow::on_toolButton_16_clicked()
+{
+    //Type of installation ko cosole
     if(ui->comboBox->currentText() == "Normal Installation with a GUI")
     {
         //GUI wala script
-        ui->textEdit->setText("pacman -S base xorg plasma");
+        ui->textEdit_2->setText("pacman -S base xorg plasma");
     }
     else if(ui->comboBox->currentText() == "Normal Installation with a GUI and some Utilities")
     {
         //GUI ra bloatware wala script
-        ui->textEdit->setText("pacman -S base xorg plasma kde-applications");
+        ui->textEdit_2->setText("pacman -S base xorg plasma kde-applications");
     }
     else
     {
         //Minimal installation ko script
-        ui->textEdit->setText("pacman -S base");
+        ui->textEdit_2->setText("pacman -S base");
     }
+    QWidget* currentWidget = ui->stackedWidget->currentWidget();
+    if (currentWidget != consolePage) {
+        pageHistory.push(currentWidget);
+        ui->stackedWidget->setCurrentWidget(consolePage);
+    }
+
 }
+

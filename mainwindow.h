@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTextEdit>
 #include <QProcess>
+#include <QStack>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -80,11 +81,25 @@ private slots:
     void saveUserInfo(const QString &name, const QString &computerName,
                       const QString &username, const QString &password, const bool &remember);
 
-    void installationSelectedUpdateTerminal();
+    // void installationSelectedUpdateTerminal();
+
+    void on_toolButton_24_clicked();
+
+    void on_toolButton_23_clicked();
+
+    void on_toolButton_22_clicked();
+
+    void on_toolButton_18_clicked();
+
+    void on_toolButton_17_clicked();
+
+    void on_toolButton_16_clicked();
 
 private:
     Ui::ArchLinuxInstaller *ui;
     QTextEdit *commandWindow;
+    QStack<QWidget*> pageHistory;
+    QWidget* consolePage;
     //QProcess *process;
     // QWidget *SecondPage;
 };
