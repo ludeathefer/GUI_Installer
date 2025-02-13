@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTextEdit>
+#include <QProcess>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,6 +18,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QStringList script;
 
 
 private slots:
@@ -83,6 +85,7 @@ private slots:
 private:
     Ui::ArchLinuxInstaller *ui;
     QTextEdit *commandWindow;
+    //QProcess *process;
     // QWidget *SecondPage;
 };
 #endif // MAINWINDOW_H

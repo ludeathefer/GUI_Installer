@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QDebug>
+#include<QString>
 
 
 void populatePartitionTree(QTreeWidget *treeWidget, QString disk) {
@@ -79,6 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
     // commandWindow->setReadOnly(true);
     // commandWindow->resize(600, 400);
     // commandWindow->show();
+    script << "GUI_Installer/build/abc.sh";
 
 }
 
@@ -104,26 +106,41 @@ void MainWindow::on_toolButton_4_clicked()
     ui->stackedWidget->setCurrentWidget(ui->page_3);
 }
 
+    QStringList args;
+
 
 void MainWindow::on_toolButton_6_clicked()
 {
+
     if(ui->comboBox->currentText() == "Normal Installation with a GUI")
     {
         //GUI wala script
-        qDebug() << "Normal GUI haalxa rey!";
+        script << "Normal GUI haalxa rey!";
     }
     else if(ui->comboBox->currentText() == "Normal Installation with a GUI and some Utilities")
     {
         //GUI ra bloatware wala script
-        qDebug() << "Bloatwares pani haalxa rey!";
+        script << "Bloatwares pani haalxa rey!";
     }
     else
     {
         //Minimal installation ko script
-        qDebug() << "GUI nai chaidaina rey rey!";
+        script << "GUI nai chaidaina rey rey!";
     }
 
+    // ui->stackedWidget->setCurrentWidget(ui->page_5);
+    qDebug() << "Aba chalxa!";
+    QProcess *process = new QProcess(this);
+
+    connect(process, &QProcess::readyReadStandardOutput, [process]() {
+         qDebug() << qPrintable(process->readAllStandardOutput());
+    });
+
+    process->start("bash", script);
     ui->stackedWidget->setCurrentWidget(ui->page_5);
+
+
+
 }
 
 
