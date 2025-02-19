@@ -1,14 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "console.h"
 #include <QMainWindow>
-#include <QTextEdit>
-#include <QProcess>
-#include <QStack>
+#include <QStackedWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
-class ArchLinuxInstaller;
+class MainWindow;
 }
 QT_END_NAMESPACE
 
@@ -19,88 +18,18 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    QStringList script;
-
-
-private slots:
-
-    // void on_toolButton_clicked();
-
-    void on_toolButton_2_clicked();
-
-    // void on_stackedWidget_currentChanged(int arg1);
-
-    // void on_pushButton_clicked();
-
-    void on_toolButton_3_clicked();
-
-    void on_toolButton_4_clicked();
-
-    void on_toolButton_6_clicked();
-
-    void on_toolButton_5_clicked();
-
-    void on_toolButton_7_clicked();
-
-    void on_toolButton_8_clicked();
-
-    void on_toolButton_9_clicked();
-
-    void on_toolButton_10_clicked();
-
-    void on_toolButton_11_clicked();
-
-    void on_toolButton_12_clicked();
-
-    void on_plainTextEdit_blockCountChanged(int newBlockCount);
-
-    void on_toolButton_13_clicked();
-
-    void on_toolButton_14_clicked();
-
-    void on_toolButton_15_clicked();
-
-    void on_radioButton_toggled(bool checked);
-
-    void checkDiskOption();
-
-    void checkAccount();
-
-    void checkAgreed();
-
-    void checkPasswordMatch();
-
-    void generateComputerName();
-
-    void on_toolButton_19_clicked();
-
-    void on_toolButton_20_clicked();
-
-    void on_toolButton_21_clicked();
-
-    void saveUserInfo(const QString &name, const QString &computerName,
-                      const QString &username, const QString &password, const bool &remember);
-
-    // void installationSelectedUpdateTerminal();
-
-    void on_toolButton_24_clicked();
-
-    void on_toolButton_23_clicked();
-
-    void on_toolButton_22_clicked();
-
-    void on_toolButton_18_clicked();
-
-    void on_toolButton_17_clicked();
-
-    void on_toolButton_16_clicked();
 
 private:
-    Ui::ArchLinuxInstaller *ui;
-    QTextEdit *commandWindow;
-    QStack<QWidget*> pageHistory;
-    QWidget* consolePage;
-    //QProcess *process;
-    // QWidget *SecondPage;
+    Ui::MainWindow *ui;
+    QStackedWidget *stackedWidget;
+    Console *console;
+
+    void maximizeWindow();
+    void loadUi();
+
+private slots:
+    void onNextClick();
+    void onBackClick();
+    void onCancelClick();
 };
 #endif // MAINWINDOW_H
