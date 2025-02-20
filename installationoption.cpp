@@ -2,7 +2,6 @@
 
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QString>
 #include <QFont>
 
 InstallationOption::InstallationOption(QStackedWidget *parent)

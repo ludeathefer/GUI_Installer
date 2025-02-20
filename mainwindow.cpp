@@ -35,6 +35,7 @@ void MainWindow::maximizeWindow()
 
 void MainWindow::loadUi()
 {
+
     QHBoxLayout *mainLayout = new QHBoxLayout(ui->centralwidget);
     mainLayout->setContentsMargins(10, 0, 10, 10);
     mainLayout->setSpacing(10);
@@ -68,6 +69,7 @@ void MainWindow::loadUi()
     connect(stackedWidget, &QStackedWidget::currentChanged, this, [=](int index) {
         back->setEnabled(index > 0);
         console->setVisible(index > 0);
+        console->onPageChange(index);
 
         int maxIndex = stackedWidget->count() - 1;
         next->setText(index == maxIndex ? "Finish" : "Next");
