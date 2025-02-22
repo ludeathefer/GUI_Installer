@@ -1,22 +1,32 @@
 #!/bin/bash
 
 welcome() {
-    echo "This is the welcome page."
-}
-
-installationtype() {
-    echo "This is the installation type page."
+    echo "That was the welcome page."
 }
 
 installationoption() {
-    echo "This is the installation option page."
+    echo "That was the installation option page."
 }
 
+installationtype() {
+    echo "That was the installation type page."
+    echo "Type number $1 was selected."
+}
+
+createAccount() {
+    echo "This was the create account page."
+}
+
+
 main() {
-    case $1 in
-        0) welcome ;;
-        1) installationtype ;;
-        2) installationoption ;;
+    local page=$1
+    shift
+
+    case $page in
+        0) welcome "$@";;
+        1) installationoption "$@";;
+        2) installationtype "$@";;
+        3) createAccount "$@";;
         *) echo "Invalid input. Stopping the script."
     esac
 }

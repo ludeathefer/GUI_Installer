@@ -1,15 +1,14 @@
 #ifndef INSTALLATIONTYPE_H
 #define INSTALLATIONTYPE_H
 
-#include <QWidget>
+#include "page.h"
 #include <QStackedWidget>
 
-class InstallationType: public QWidget
+class InstallationType: public Page
 {
     Q_OBJECT
 public:
     explicit InstallationType(QStackedWidget *parent = nullptr);
-
 private:
     void loadUi();
 };

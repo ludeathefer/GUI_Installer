@@ -6,7 +6,7 @@
 #include <QFont>
 
 Welcome::Welcome(QStackedWidget *parent)
-    : QWidget(parent)
+    : Page{parent}
 {
     loadUi();
 }

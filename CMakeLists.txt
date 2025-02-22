@@ -29,6 +29,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         console.h console.cpp
         installationscript.sh
         resources.qrc
+        page.h page.cpp
+        createaccount.h createaccount.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET GUI_Installer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

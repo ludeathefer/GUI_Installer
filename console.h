@@ -12,7 +12,7 @@ public:
     ~Console();
 
 public slots:
-    void onPageChange(int currentPageIndex);
+    void onExecuteScript(int currentPageIndex, QStringList params);
 
 private:
     QString scriptPath;

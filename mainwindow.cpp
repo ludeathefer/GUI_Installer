@@ -1,9 +1,13 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+
+#include "page.h"
 #include "welcome.h"
 #include "installationoption.h"
 #include "installationtype.h"
+#include "createaccount.h"
 
+#include <QWidget>
 #include <QStackedWidget>
 #include <QScreen>
 #include <QGuiApplication>
@@ -35,7 +39,6 @@ void MainWindow::maximizeWindow()
 
 void MainWindow::loadUi()
 {
-
     QHBoxLayout *mainLayout = new QHBoxLayout(ui->centralwidget);
     mainLayout->setContentsMargins(10, 0, 10, 10);
     mainLayout->setSpacing(10);
@@ -48,9 +51,11 @@ void MainWindow::loadUi()
     Welcome *welcome = new Welcome(stackedWidget);
     InstallationType *installationType = new InstallationType(stackedWidget);
     InstallationOption *installationOption = new InstallationOption(stackedWidget);
+    CreateAccount *createAccount = new CreateAccount(stackedWidget);
     stackedWidget->addWidget(welcome);
     stackedWidget->addWidget(installationOption);
     stackedWidget->addWidget(installationType);
+    stackedWidget->addWidget(createAccount);
     stackedWidgetLayout->addWidget(stackedWidget);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
@@ -68,8 +73,6 @@ void MainWindow::loadUi()
 
     connect(stackedWidget, &QStackedWidget::currentChanged, this, [=](int index) {
         back->setEnabled(index > 0);
-        console->setVisible(index > 0);
-        console->onPageChange(index);
 
         int maxIndex = stackedWidget->count() - 1;
         next->setText(index == maxIndex ? "Finish" : "Next");
@@ -83,6 +86,8 @@ void MainWindow::loadUi()
             mainLayout->setStretch(0, 0);
             mainLayout->setStretch(1, 0);
         }
+
+        console->setVisible(index > 0);
     });
     stackedWidgetLayout->addLayout(buttonsLayout);
 
@@ -96,14 +101,24 @@ void MainWindow::loadUi()
     mainLayout->addLayout(consoleLayout);
 }
 
+void MainWindow::executeScript()
+{
+    int currentIndex = stackedWidget->currentIndex();
+    Page *page = qobject_cast<Page*>(stackedWidget->currentWidget());
+    qDebug() << page->params;
+    console->onExecuteScript(currentIndex, page->params);
+}
+
 void MainWindow::onBackClick()
 {
+    executeScript();
     int currentIndex = stackedWidget->currentIndex();
     stackedWidget->setCurrentIndex(currentIndex - 1);
 }
 
 void MainWindow::onNextClick()
 {
+    executeScript();
     int currentIndex = stackedWidget->currentIndex();
     int maxIndex = stackedWidget->count() - 1;
     if(currentIndex != maxIndex)

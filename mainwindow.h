@@ -4,6 +4,8 @@
 #include "console.h"
 #include <QMainWindow>
 #include <QStackedWidget>
+#include <QQueue>
+#include <QStringList>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,6 +28,7 @@ private:
 
     void maximizeWindow();
     void loadUi();
+    void executeScript();
 
 private slots:
     void onNextClick();

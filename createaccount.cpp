@@ -1,4 +1,4 @@
-#include "installationoption.h"
+#include "createaccount.h"
 
 #include <QVBoxLayout>
 #include <QLabel>
@@ -6,24 +6,21 @@
 #include <QRadioButton>
 #include <QButtonGroup>
 
-InstallationOption::InstallationOption(QStackedWidget *parent)
+CreateAccount::CreateAccount(QStackedWidget *parent)
     : Page{parent}
 {
     loadUi();
 }
 
-void InstallationOption::loadUi()
+void CreateAccount::loadUi()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-    QLabel *title = new QLabel("Choose installation option");
+    QLabel *title = new QLabel("Create user account");
     QFont titleFont;
     titleFont.setPointSize(20);
     titleFont.setBold(true);
     title->setFont(titleFont);
     title->setAlignment(Qt::AlignHCenter);
     mainLayout->addWidget(title);
-
-    QButtonGroup *radioGroup = new QButtonGroup();
-    // QRadioButton
 }

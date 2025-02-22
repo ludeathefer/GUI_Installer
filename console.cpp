@@ -76,16 +76,17 @@ void Console::extractScript()
     QFile::setPermissions(scriptPath, QFileDevice::ExeOwner | QFileDevice::ReadOwner | QFileDevice::WriteOwner);
 }
 
-void Console::onPageChange(int currentPageIndex)
+void Console::onExecuteScript(int currentPageIndex, QStringList params)
 {
     QProcess *process = new QProcess(this);
     connect(process, &QProcess::readyReadStandardOutput, [=]() {
-        QByteArray output = process->readAllStandardOutput();
+        QString output = process->readAllStandardOutput();
+        output.prepend(scriptOutput->text());
         scriptOutput->setText(output);
     });
 
     connect(process, &QProcess::readyReadStandardError, [=]() {
-        QByteArray errorOutput = process->readAllStandardError();
+        QString errorOutput = process->readAllStandardError();
         scriptOutput->setText("Error: " + errorOutput);
         QPalette errorPalette = QPalette();
         errorPalette.setColor(QPalette::WindowText, Qt::red);
@@ -94,7 +95,7 @@ void Console::onPageChange(int currentPageIndex)
     });
 
     process->setProgram("/bin/bash");
-    process->setArguments(QStringList() << scriptPath << QString::number(currentPageIndex));
+    process->setArguments(QStringList() << scriptPath << QString::number(currentPageIndex) << params);
 
     process->start();
 }
@@ -103,3 +104,4 @@ void Console::deleteScript()
 {
     QFile::remove(scriptPath);
 }
+
