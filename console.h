@@ -17,6 +17,7 @@ public slots:
 private:
     QString scriptPath;
     QLabel *scriptOutput;
+
     void loadUi();
     void extractScript();
     void deleteScript();

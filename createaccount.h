@@ -2,7 +2,6 @@
 #define CREATEACCOUNT_H
 
 #include "page.h"
-#include <QStackedWidget>
 
 class CreateAccount : public Page
 {

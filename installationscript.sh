@@ -6,16 +6,25 @@ welcome() {
 
 installationoption() {
     echo "That was the installation option page."
-    echo "Type number $1 was selected."
+    echo "Selected option: $1"
 }
 
 installationtype() {
     echo "That was the installation type page."
-    echo "Type number $1 was selected."
+    echo "Selected type: $1"
 }
 
 createAccount() {
-    echo "This was the create account page."
+    echo "That was the create account page."
+    echo "Name: $1"
+    echo "Username: $2"
+    echo "Computer's name: $3"
+    echo "Password: $4"
+    echo "Require password to login: $6"
+}
+
+setRegion() {
+    echo "That was the set region page."
 }
 
 

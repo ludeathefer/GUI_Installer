@@ -15,7 +15,7 @@ void Welcome::loadUi()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-    QLabel *title = new QLabel("Welcome to the Arch Linux Installation Wizard");
+    QLabel *title = new QLabel("Welcome to the Radarch Linux Installation Wizard");
     QFont titleFont;
     titleFont.setPointSize(20);
     titleFont.setBold(true);

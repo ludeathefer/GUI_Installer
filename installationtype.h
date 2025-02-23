@@ -2,7 +2,6 @@
 #define INSTALLATIONTYPE_H
 
 #include "page.h"
-#include <QStackedWidget>
 
 class InstallationType: public Page
 {

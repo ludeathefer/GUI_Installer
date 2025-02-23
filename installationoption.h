@@ -2,7 +2,6 @@
 #define INSTALLATIONOPTION_H
 
 #include "page.h"
-#include <QStackedWidget>
 
 class InstallationOption : public Page
 {

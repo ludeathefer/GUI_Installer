@@ -7,9 +7,11 @@ class Page : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Page(QStackedWidget *parent = nullptr);
-
     QStringList params;
+
+    explicit Page(QStackedWidget *parent = nullptr);
+    QFrame* createDivider();
+
 signals:
 };
 

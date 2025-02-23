@@ -6,6 +6,7 @@
 #include "installationoption.h"
 #include "installationtype.h"
 #include "createaccount.h"
+#include "setregion.h"
 
 #include <QWidget>
 #include <QStackedWidget>
@@ -52,10 +53,13 @@ void MainWindow::loadUi()
     InstallationType *installationType = new InstallationType(stackedWidget);
     InstallationOption *installationOption = new InstallationOption(stackedWidget);
     CreateAccount *createAccount = new CreateAccount(stackedWidget);
+    SetRegion *setRegion = new SetRegion(stackedWidget);
+
     stackedWidget->addWidget(welcome);
     stackedWidget->addWidget(installationOption);
     stackedWidget->addWidget(installationType);
     stackedWidget->addWidget(createAccount);
+    stackedWidget->addWidget(setRegion);
     stackedWidgetLayout->addWidget(stackedWidget);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
