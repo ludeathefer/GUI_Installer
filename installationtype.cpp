@@ -32,8 +32,13 @@ void InstallationType::loadUi()
 
     QComboBox *itSelection = new QComboBox(this);
     QStringList itSelectionOptions = {"Minimal Installation", "Normal Installation (GUI)", "Normal Installation with added utilities"};
+
     connect(itSelection, &QComboBox::currentIndexChanged, this, [=](int index) {
-        params.prepend(QString::number(index + 1));
+        if (!params.isEmpty()) {
+            params[0] = QString::number(index + 1);
+        } else {
+            params.append(QString::number(index + 1));
+        }
     });
 
     itSelection->addItems(itSelectionOptions);

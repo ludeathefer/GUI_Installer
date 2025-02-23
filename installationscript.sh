@@ -6,6 +6,7 @@ welcome() {
 
 installationoption() {
     echo "That was the installation option page."
+    echo "Type number $1 was selected."
 }
 
 installationtype() {
