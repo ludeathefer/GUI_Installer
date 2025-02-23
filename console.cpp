@@ -26,28 +26,32 @@ void Console::loadUi()
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QPalette palette = QPalette();
     palette.setColor(QPalette::Window, Qt::black);
-
     setAutoFillBackground(true);
     setPalette(palette);
 
     QLabel *title = new QLabel("Console Output:");
     scriptOutput = new QLabel();
-
     QFont titleFont;
     titleFont.setPointSize(20);
     titleFont.setBold(true);
-    titleFont.setPointSize(20);
-    titleFont.setBold(true);
-
     QPalette textPalette = QPalette();
     textPalette.setColor(QPalette::WindowText, Qt::white);
-
     title->setFont(titleFont);
     title->setAlignment(Qt::AlignHCenter);
+    title->setFixedHeight(100);
     title->setPalette(textPalette);
-
     mainLayout->addWidget(title);
+
+    QFrame *line1 = new QFrame();
+    line1->setFrameShape(QFrame::HLine);
+    line1->setFrameShadow(QFrame::Sunken);
+    line1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    mainLayout->addWidget(line1);;
+    mainLayout->addStretch();
+
     mainLayout->addWidget(scriptOutput);
+
+    mainLayout->addStretch();
 }
 
 void Console::extractScript()

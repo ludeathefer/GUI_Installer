@@ -23,10 +23,13 @@ createAccount() {
     echo "Require password to login: $6"
 }
 
-setRegion() {
-    echo "That was the set region page."
+systemLocalization() {
+    echo "That was the system localization page."
 }
 
+diskPartitions() {
+    echo "That was tht disk partitions page."
+}
 
 main() {
     local page=$1
@@ -37,6 +40,8 @@ main() {
         1) installationoption "$@";;
         2) installationtype "$@";;
         3) createAccount "$@";;
+        4) systemLocalization "$@";;
+        5) diskPartitions "$@";;
         *) echo "Invalid input. Stopping the script."
     esac
 }

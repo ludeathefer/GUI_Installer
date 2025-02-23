@@ -6,7 +6,8 @@
 #include "installationoption.h"
 #include "installationtype.h"
 #include "createaccount.h"
-#include "setregion.h"
+#include "systemlocalization.h"
+#include "diskpartitions.h"
 
 #include <QWidget>
 #include <QStackedWidget>
@@ -53,13 +54,16 @@ void MainWindow::loadUi()
     InstallationType *installationType = new InstallationType(stackedWidget);
     InstallationOption *installationOption = new InstallationOption(stackedWidget);
     CreateAccount *createAccount = new CreateAccount(stackedWidget);
-    SetRegion *setRegion = new SetRegion(stackedWidget);
+    SystemLocalization *systemLocalization = new SystemLocalization(stackedWidget);
+    DiskPartitions *diskPartitions = new DiskPartitions(stackedWidget);
 
     stackedWidget->addWidget(welcome);
     stackedWidget->addWidget(installationOption);
     stackedWidget->addWidget(installationType);
     stackedWidget->addWidget(createAccount);
-    stackedWidget->addWidget(setRegion);
+    stackedWidget->addWidget(systemLocalization);
+    stackedWidget->addWidget(diskPartitions);
+
     stackedWidgetLayout->addWidget(stackedWidget);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
@@ -90,9 +94,16 @@ void MainWindow::loadUi()
             mainLayout->setStretch(0, 0);
             mainLayout->setStretch(1, 0);
         }
-
         console->setVisible(index > 0);
     });
+
+    // stackedWidget->setCurrentWidget(diskPartitions);
+
+    QFrame *line1 = new QFrame();
+    line1->setFrameShape(QFrame::HLine);
+    line1->setFrameShadow(QFrame::Sunken);
+    line1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    stackedWidgetLayout->addWidget(line1);;
     stackedWidgetLayout->addLayout(buttonsLayout);
 
     QVBoxLayout *consoleLayout = new QVBoxLayout();

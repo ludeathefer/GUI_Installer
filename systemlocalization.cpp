@@ -1,28 +1,32 @@
-#include "setregion.h"
+#include "systemlocalization.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QString>
 #include <QFont>
 #include <QComboBox>
+#include <QFile>
+#include <QDir>
 
-SetRegion::SetRegion(QStackedWidget *parent)
+SystemLocalization::SystemLocalization(QStackedWidget *parent)
     : Page{parent}
 {
     loadUi();
 }
 
-void SetRegion::loadUi()
+void SystemLocalization::loadUi()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-    QLabel *title = new QLabel("Select your region");
+    QLabel *title = new QLabel("System Localization");
     QFont titleFont;
     titleFont.setPointSize(20);
     titleFont.setBold(true);
     title->setFont(titleFont);
     title->setAlignment(Qt::AlignHCenter);
-    title->setFixedHeight(200);
+    title->setFixedHeight(100);
     mainLayout->addWidget(title);
+
+    mainLayout->addWidget(createDivider());
     mainLayout->addStretch();
 
     QFont labelFont("", 12, QFont::Medium);
@@ -40,8 +44,10 @@ void SetRegion::loadUi()
     locationSelectionLabel->setFont(labelFont);
     locationSelectionLayout->addWidget(locationSelectionLabel);
     QComboBox *locationSelection = new QComboBox(regionSelectionContainer);
-    QStringList locationSelectionOptions = {"US ", "Nepal"};
-    locationSelection->addItems(locationSelectionOptions);
+
+    QStringList locations = getLocations();
+    locationSelection->addItems(locations);
+
     locationSelectionLayout->addWidget(locationSelection);
     regionSelectionLayout->addLayout(locationSelectionLayout);
 
@@ -52,8 +58,11 @@ void SetRegion::loadUi()
     timezoneSelectionLabel->setFont(labelFont);
     timezoneSelectionLayout->addWidget(timezoneSelectionLabel);
     QComboBox *timezoneSelection = new QComboBox(regionSelectionContainer);
-    QStringList  timezoneSelectionOptions = {"US (GMT - 05 : 00)", "Nepal (GMT + 05 : 45)"};
-    timezoneSelection->addItems(timezoneSelectionOptions);
+
+    locationSelection->setCurrentIndex(0);
+    QStringList timezones = getTimezones(locationSelection->currentText());
+    timezoneSelection->addItems(timezones);
+
     timezoneSelectionLayout->addWidget(timezoneSelection);
     regionSelectionLayout->addLayout(timezoneSelectionLayout);
 
@@ -61,4 +70,38 @@ void SetRegion::loadUi()
 
     mainLayout->addWidget(regionSelectionContainer);
     mainLayout->addStretch();
+
+    connect(locationSelection, &QComboBox::currentTextChanged, this, [=](const QString &region) {
+        timezoneSelection->clear();
+        timezoneSelection->addItems(getTimezones(region));
+    });
+
+    locationSelection->setCurrentText("Asia");
+    timezoneSelection->setCurrentText("Asia/Kathmandu");
+}
+
+QStringList SystemLocalization::getLocations()
+{
+    QStringList regions;
+    QDir zoneDir("/usr/share/zoneinfo/");
+    QStringList entries = zoneDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    for (const QString &entry : entries) {
+        if (entry != "posix" && entry != "right" && entry != "SystemV" && entry != "Etc") {
+            regions.append(entry);
+        }
+    }
+    return regions;
+}
+
+QStringList SystemLocalization::getTimezones(const QString &region)
+{
+    QStringList timezones;
+    QDir regionDir("/usr/share/zoneinfo/" + region);
+    QStringList entries = regionDir.entryList(QDir::Files);
+
+    for (const QString &entry : entries) {
+        timezones.append(region + "/" + entry);
+    }
+    return timezones;
 }

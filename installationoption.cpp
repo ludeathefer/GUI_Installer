@@ -22,8 +22,10 @@ void InstallationOption::loadUi()
     titleFont.setBold(true);
     title->setFont(titleFont);
     title->setAlignment(Qt::AlignHCenter);
-    title->setFixedHeight(200);
+    title->setFixedHeight(100);
     mainLayout->addWidget(title);
+
+    mainLayout->addWidget(createDivider());
     mainLayout->addStretch();
 
     QWidget *optionsContainer = new QWidget(this);

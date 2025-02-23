@@ -2,7 +2,6 @@
 
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QString>
 #include <QFont>
 
 Welcome::Welcome(QStackedWidget *parent)
@@ -21,8 +20,11 @@ void Welcome::loadUi()
     titleFont.setBold(true);
     title->setFont(titleFont);
     title->setAlignment(Qt::AlignHCenter);
-    title->setFixedHeight(200);
+    title->setFixedHeight(100);
     mainLayout->addWidget(title);
+
+    mainLayout->addWidget(createDivider());
+    mainLayout->addStretch();
 
     QLabel *description = new QLabel("This installer will guide you through the most difficult task of installing Arch Linux on your PC,\nand you wont feel it as hard as it used to be.");
     QFont descriptionFont;
