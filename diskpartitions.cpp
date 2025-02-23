@@ -169,8 +169,6 @@ void DiskPartitions::addPartition() {
     delete dialog;
 }
 
-
-
 void DiskPartitions::deletePartition()
 {
     QTreeWidgetItem *selectedItem = partitionTable->currentItem();

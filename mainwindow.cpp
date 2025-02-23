@@ -111,9 +111,10 @@ void MainWindow::loadUi()
     console->setVisible(false);
     console->setMaximumWidth(halfWidth);
     consoleLayout->addWidget(console);
-
-    mainLayout->addLayout(stackedWidgetLayout);
+\
     mainLayout->addLayout(consoleLayout);
+    mainLayout->addLayout(stackedWidgetLayout);
+
 }
 
 void MainWindow::executeScript()
