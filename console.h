@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QProcess>
 
 class Console : public QWidget
 {
@@ -10,9 +11,7 @@ class Console : public QWidget
 public:
     explicit Console(QWidget *parent = nullptr);
     ~Console();
-
-public slots:
-    void onExecuteScript(int currentPageIndex, QStringList params);
+    void onExecuteScript(int currentPageIndex, QStringList params, QProcess *process);
 
 private:
     QString scriptPath;

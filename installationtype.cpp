@@ -40,7 +40,7 @@ void InstallationType::loadUi()
     itSelectionLayout->addWidget(itLabel);
 
     QComboBox *itSelection = new QComboBox(itSelectionContainer);
-    QStringList itSelectionOptions = {"Minimal Installation", "Normal Installation (GUI)", "Normal Installation with added utilities"};
+    QStringList itSelectionOptions = {"Minimal Installation", "Normal Installation (GUI)"};
 
     itSelectionLayout->addWidget(itSelection);
 

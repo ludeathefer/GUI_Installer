@@ -7,6 +7,7 @@
 #include <QStackedWidget>
 #include <QQueue>
 #include <QStringList>
+#include <QPushButton>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,12 +28,15 @@ signals:
 private:
     Ui::MainWindow *ui;
     QStackedWidget *stackedWidget;
+    QPushButton *next, *back, *cancel;
     Console *console;
     Page *currentPage;
+    QList<QStringList> paramsStore;
+    bool runningScript;
 
     void maximizeWindow();
     void loadUi();
-    void executeScript();
+    void executeScript(QStringList params);
     void closeEvent(QCloseEvent *event);
 
 private slots:

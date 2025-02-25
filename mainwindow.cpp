@@ -8,6 +8,7 @@
 #include "createaccount.h"
 #include "systemlocalization.h"
 #include "diskpartitions.h"
+#include "installing.h"
 
 #include <QWidget>
 #include <QStackedWidget>
@@ -18,6 +19,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QProcess>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     maximizeWindow();
+    paramsStore.resize(6);
     loadUi();
 }
 
@@ -58,6 +61,7 @@ void MainWindow::loadUi()
     CreateAccount *createAccount = new CreateAccount(stackedWidget);
     SystemLocalization *systemLocalization = new SystemLocalization(stackedWidget);
     DiskPartitions *diskPartitions = new DiskPartitions(stackedWidget);
+    Installing *installing = new Installing(stackedWidget);
 
     stackedWidget->addWidget(welcome);
     currentPage = qobject_cast<Page*>(stackedWidget->currentWidget());
@@ -69,15 +73,16 @@ void MainWindow::loadUi()
     stackedWidget->addWidget(createAccount);
 
     stackedWidget->addWidget(systemLocalization);
+    stackedWidget->addWidget(installing);
     stackedWidgetLayout->addWidget(stackedWidget);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
-    QPushButton *next = new QPushButton("Next", this);
+    next = new QPushButton("Next", this);
     connect(next, &QPushButton::clicked, this, &MainWindow::onNextClick);
-    QPushButton *back = new QPushButton("Back", this);
-    back->setEnabled(false);
+    back = new QPushButton("Back", this);
+    back->setVisible(false);
     connect(back, &QPushButton::clicked, this, &MainWindow::onBackClick);
-    QPushButton *cancel = new QPushButton("Cancel", this);
+    cancel = new QPushButton("Cancel", this);
     connect(cancel, &QPushButton::clicked, this, &MainWindow::onCancelClick);
     buttonsLayout->addStretch(3);
     buttonsLayout->addWidget(back);
@@ -102,19 +107,23 @@ void MainWindow::loadUi()
 
     connect(stackedWidget, &QStackedWidget::currentChanged, this, [=](int index) {
         currentPage = qobject_cast<Page*>(stackedWidget->currentWidget());
-        next->setEnabled(!currentPage->error);
+
 
         if (index == 4)
+        {
             connect(this, &MainWindow::nextClicked, createAccount, &CreateAccount::validateFields);
-
-        connect(currentPage, &Page::errorChanged, this, [=](bool changedError) {
-            next->setEnabled(!changedError);
-        });
-
-        back->setEnabled(index > 0);
+            next->setEnabled(!currentPage->error);
+            connect(currentPage, &Page::errorChanged, this, [=](bool changedError) {
+                next->setEnabled(!changedError);
+            });
+        }
 
         int maxIndex = stackedWidget->count() - 1;
         next->setText(index == maxIndex ? "Finish" : "Next");
+
+
+        back->setVisible(index > 0 && index != maxIndex);
+        cancel->setVisible(index != maxIndex);
 
         if (index > 0) {
             stackedWidget->setMaximumWidth(halfWidth);
@@ -129,11 +138,26 @@ void MainWindow::loadUi()
     });
 }
 
-void MainWindow::executeScript()
+void MainWindow::executeScript(QStringList params)
 {
     int currentIndex = stackedWidget->currentIndex();
-    qDebug() << currentPage->params;
-    console->onExecuteScript(currentIndex, currentPage->params);
+    qDebug() << params;
+
+    next->setEnabled(false);
+    back->setEnabled(false);
+    cancel->setEnabled(false);
+    runningScript = true;
+
+    QProcess *process = new QProcess(this);
+    connect(process, &QProcess::finished, this, [=]() {
+        next->setEnabled(true);
+        back->setEnabled(true);
+        cancel->setEnabled(true);
+        runningScript = false;
+        process->deleteLater();
+    });
+
+    console->onExecuteScript(currentIndex, params, process);
 }
 
 void MainWindow::onBackClick()
@@ -154,17 +178,28 @@ void MainWindow::onNextClick()
 
     disconnect(currentPage, &Page::errorChanged, nullptr, nullptr);
 
-    executeScript();
+    if (currentIndex < 6)
+        paramsStore[currentIndex] = currentPage->params;
 
     if (currentIndex == 2 && currentPage->params.at(0) != "2") {
+        executeScript(currentPage->params);
         stackedWidget->setCurrentIndex(currentIndex + 2);
-        return;
     }
-
-    if(currentIndex != maxIndex)
+    else if (currentIndex == maxIndex - 1) {
+        QStringList flattenedParams;
+        for (const auto &paramList : paramsStore) {
+            flattenedParams.append(paramList);
+        }
+        executeScript(flattenedParams);
         stackedWidget->setCurrentIndex(currentIndex + 1);
-    else
+    }
+    else if (currentIndex != maxIndex) {
+        executeScript(currentPage->params);
+        stackedWidget->setCurrentIndex(currentIndex + 1);
+    }
+    else {
         close();
+    }
 }
 
 void MainWindow::onCancelClick()
@@ -174,6 +209,19 @@ void MainWindow::onCancelClick()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    int currentIndex = stackedWidget->currentIndex();
+    int maxIndex = stackedWidget->count() - 1;
+
+    if (currentIndex == maxIndex) {
+        if (runningScript) {
+        QMessageBox::warning(this, "Installation in progress", "Qutting while installation is in progess will lead to critical system errors. Please wait until it is completed.", QMessageBox::Ok);
+        event->ignore();
+        } else {
+            event->accept();
+        }
+        return;
+    };
+
     int ret = QMessageBox::warning(this, "Cancel Installation", "Are you sure you want to cancel? You will have to start over.", QMessageBox::Yes | QMessageBox::No);
     if (ret == QMessageBox::Yes) {
         event->accept();

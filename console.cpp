@@ -51,16 +51,14 @@ void Console::loadUi()
     scrollArea->setWidgetResizable(true);
     scrollArea->setPalette(palette);
 
-    // Console output
     scriptOutput = new QLabel();
     scriptOutput->setWordWrap(true);
-    scriptOutput->setTextInteractionFlags(Qt::TextSelectableByMouse);  // Allow text selection
+    scriptOutput->setTextInteractionFlags(Qt::TextSelectableByMouse);
     scriptOutput->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     QPalette outputPalette;
     outputPalette.setColor(QPalette::WindowText, Qt::white);
     scriptOutput->setPalette(outputPalette);
 
-    // Container widget for scrolling
     QWidget *scrollWidget = new QWidget();
     QVBoxLayout *scrollLayout = new QVBoxLayout(scrollWidget);
     scrollLayout->addWidget(scriptOutput);
@@ -97,9 +95,8 @@ void Console::extractScript()
     QFile::setPermissions(scriptPath, QFileDevice::ExeOwner | QFileDevice::ReadOwner | QFileDevice::WriteOwner);
 }
 
-void Console::onExecuteScript(int currentPageIndex, QStringList params)
+void Console::onExecuteScript(int currentPageIndex, QStringList params, QProcess *process)
 {
-    QProcess *process = new QProcess(this);
     connect(process, &QProcess::readyReadStandardOutput, [=]() {
         QString output = "$ : " + process->readAllStandardOutput() + '\n';
         output.prepend(scriptOutput->text());
