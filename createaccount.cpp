@@ -4,8 +4,6 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QFont>
-#include <QRadioButton>
-#include <QButtonGroup>
 #include <QLineEdit>
 #include <QCheckBox>
 
@@ -34,160 +32,102 @@ void CreateAccount::loadUi()
     QWidget *formContainer = new QWidget(this);
     QVBoxLayout *formLayout = new QVBoxLayout(formContainer);
     formLayout->setContentsMargins(20, 0, 20, 0);
-    formLayout->setSpacing(15);
     formContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
-    QFont inputLabelFont("", 12, QFont::Medium);
+    params.resize(6);
 
-    formLayout->addWidget(createDivider());
+    QFont *inputLabelFont = new QFont("", 12, QFont::Medium);
 
-    QHBoxLayout *nameLayout = new QHBoxLayout();
-    QLabel *nameLabel = new QLabel("Name");
-    QLineEdit *nameInput = new QLineEdit(this);
-    nameLabel->setFont(inputLabelFont);
-    nameLabel->setMaximumWidth(300);
-    nameLabel->setMinimumWidth(200);
-    //    nameInput->setFixedWidth(450);
-    nameLayout->addWidget(nameLabel);
-    nameLayout->addWidget(nameInput);
-    formLayout->addLayout(nameLayout);
+    createInputField("Name*", formLayout, inputLabelFont, 0);
+    createInputField("Username*", formLayout, inputLabelFont, 1);
+    createInputField("Computer's name*", formLayout, inputLabelFont, 2);
+    createInputField("Password*", formLayout, inputLabelFont, 3, true);
+    createInputField("Confirm password*", formLayout, inputLabelFont, 4, true);
 
-    formLayout->addWidget(createDivider());
-
-    QHBoxLayout *usernameLayout = new QHBoxLayout();
-    QLabel *usernameLabel = new QLabel("Username");
-    QLineEdit *usernameInput = new QLineEdit();
-    usernameLabel->setFont(inputLabelFont);
-    usernameInput->setMinimumWidth(400);
-    //    usernameInput->setFixedWidth(450);
-    usernameLayout->addWidget(usernameLabel);
-    usernameLayout->addWidget(usernameInput);
-    formLayout->addLayout(usernameLayout);
-
-    formLayout->addWidget(createDivider());
-
-    QHBoxLayout *computerNameLayout = new QHBoxLayout();
-    QLabel *computerNameLabel = new QLabel("Computer's Name");
-    QLineEdit *computerNameInput = new QLineEdit();
-    computerNameLabel->setFont(inputLabelFont);
-    computerNameInput->setMinimumWidth(400);
-    //  computerNameInput->setFixedWidth(450);
-    computerNameLayout->addWidget(computerNameLabel);
-    computerNameLayout->addWidget(computerNameInput);
-    formLayout->addLayout(computerNameLayout);
-
-    formLayout->addWidget(createDivider());
-
-
-
-
-
-    QHBoxLayout *passwordLayout = new QHBoxLayout();
-    QLabel *passwordLabel = new QLabel("Password");
-    QLineEdit *passwordInput = new QLineEdit();
-    passwordLabel->setFont(inputLabelFont);
-    passwordInput->setMinimumWidth(100);
-    //passwordInput->
-    //    passwordInput->setFixedWidth(450);
-    passwordInput->setEchoMode(QLineEdit::Password);
-    passwordErrorLabel = new QLabel();
-    passwordErrorLabel->setVisible(false);
-    passwordErrorLabel->setFixedHeight(15);
-    passwordErrorLabel -> setMaximumWidth(300); ;
-    //passwordErrorLabel->setFont();
-    passwordLayout->addWidget(passwordLabel);
-    passwordLayout->addWidget(passwordInput);
-    passwordLayout->addWidget(passwordErrorLabel);
-    formLayout->addLayout(passwordLayout);
-
-
-
-    //formLayout->addWidget(passwordErrorLabel);
-
-
-
-
-
-
-    formLayout->addWidget(createDivider());
-
-
-
-    QHBoxLayout *confirmPasswordLayout = new QHBoxLayout();
-    QLabel *confirmPasswordLabel = new QLabel("Confirm Password");
-    QLineEdit *confirmPasswordInput = new QLineEdit();
-    confirmPasswordLabel->setFont(inputLabelFont);
-    confirmPasswordInput->setMinimumWidth(300);
-    //    confirmPasswordInput->setFixedWidth(450);
-    confirmPasswordInput->setEchoMode(QLineEdit::Password);
-    confirmPasswordErrorLabel = new QLabel();
-    confirmPasswordErrorLabel->setVisible(false);
-    confirmPasswordErrorLabel->setFixedHeight(11);
-    confirmPasswordLayout->addWidget(confirmPasswordLabel);
-    confirmPasswordLayout->addWidget(confirmPasswordInput);
-    confirmPasswordLayout->addWidget(confirmPasswordErrorLabel);
-    formLayout->addLayout(confirmPasswordLayout);
-
-
-
-
-    //formLayout->addWidget(confirmPasswordErrorLabel);
-
-
-    passwordErrorLabel->setFont(inputLabelFont);
-    confirmPasswordErrorLabel->setFont(inputLabelFont);
-
-    formLayout->addWidget(createDivider());
-
-    formLayout->addSpacing(20);
     QCheckBox *passwordToLogin = new QCheckBox("Require password to login", this);
+    passwordToLogin->setFont(*inputLabelFont);
+
+    connect(passwordToLogin, &QCheckBox::toggled, this, [=](bool checked) {
+        params[5] = QString::number(checked);
+    });
+
+    formLayout->addSpacing(15);
     formLayout->addWidget(passwordToLogin);
 
     mainLayout->addWidget(formContainer);
     mainLayout->addStretch();
-
-    params.resize(6);
-    connect(nameInput, &QLineEdit::textChanged, this, [=](const QString &value) { params[0] = value; });
-    connect(usernameInput, &QLineEdit::textChanged, this, [=](const QString &value) { params[1] = value; });
-    connect(computerNameInput, &QLineEdit::textChanged, this, [=](const QString &value) { params[2] = value; });
-    connect(passwordInput, &QLineEdit::textChanged, this, [=](const QString &value) { params[3] = value; });
-    //Pragalbha's Changes
-    connect(passwordInput, &QLineEdit::textChanged, this, &CreateAccount::passwordFieldChanged);
-    connect(confirmPasswordInput, &QLineEdit::textChanged, this, &CreateAccount::reEnterPasswordFieldChanged);
-
-    //Pragalbha ko changes end
-    connect(confirmPasswordInput, &QLineEdit::textChanged, this, [=](const QString &value) { params[4] = value; });
-    connect(passwordToLogin, &QCheckBox::toggled, this, [=](bool checked) { params[5] = QString::number(checked); });
 }
 
+QLineEdit* CreateAccount::createInputField(const QString &labelText, QVBoxLayout *layout, QFont *labelFont, int paramIndex, bool isPassword)
+{
+    QWidget *fieldContainer = new QWidget();
+    QVBoxLayout *fieldLayout = new QVBoxLayout(fieldContainer);
+    fieldLayout->setSpacing(1);
+    fieldContainer->setFixedHeight(68);
 
-void CreateAccount::passwordFieldChanged(const QString &passwordInput){
+    QHBoxLayout *inputLayout = new QHBoxLayout();
 
-    if(passwordInput.length() < 6 && !passwordInput.isEmpty()){
-        qDebug()<<"The PW length must atleast be 6 characters long";
-        passwordErrorLabel->setVisible(true);
-        passwordErrorLabel ->setText("Password must be min 6 characters long.");
-        passwordErrorLabel->setStyleSheet("color: red;"); // Set text color to red
-    }
-    else{
-        passwordErrorLabel->clear();
-        passwordErrorLabel->setVisible(false);
-    }
+    QLabel *label = new QLabel(labelText);
+    label->setFont(*labelFont);
+
+    QLineEdit *input = new QLineEdit(this);
+    input->setFixedWidth(450);
+    if (isPassword) input->setEchoMode(QLineEdit::Password);
+
+    QLabel *errorLabel = new QLabel();
+    QFont errorFont("", 8);
+    QPalette errorPalette = QPalette();
+    errorLabel->setVisible(false);
+    errorLabel->setFont(errorFont);
+    errorPalette.setColor(QPalette::WindowText, Qt::red);
+    errorLabel->setPalette(errorPalette);
+    errorLabel->setAlignment(Qt::AlignRight);
+
+    inputLayout->addWidget(label);
+    inputLayout->addWidget(input);
+
+    fieldLayout->addSpacing(10);
+    fieldLayout->addLayout(inputLayout);
+    fieldLayout->addWidget(errorLabel);
+    fieldLayout->setAlignment(Qt::AlignTop);
+    layout->addWidget(fieldContainer);
+    layout->addWidget(createDivider());
+
+    connect(input, &QLineEdit::textChanged, this, [=](const QString &value) {
+        params[paramIndex] = value;
+        if (error) validateFields();
+    });
+
+    errorLabels.append(errorLabel);
+    return input;
 }
 
-void CreateAccount::reEnterPasswordFieldChanged(const QString &confirmPasswordInput){
+void CreateAccount::validateFields()
+{
+    bool hasError = false;
 
-    if(params.size()<4)
-        return;
+    for (int i = 0; i < 5; ++i) {
+        if (params[i].trimmed().isEmpty()) {
+            errorLabels.at(i)->setText("This field is required.");
+            errorLabels.at(i)->setVisible(true);
+            hasError = true;
+        } else {
+            errorLabels.at(i)->clear();
+            errorLabels.at(i)->setVisible(false);
+        }
+    }
 
-    if(confirmPasswordInput != params[3] && !confirmPasswordInput.isEmpty()){
-        qDebug()<<"Paassworrds Donot match";
-        confirmPasswordErrorLabel->setVisible(true);
-        confirmPasswordErrorLabel->setText("Passworrds Donot match");
-        confirmPasswordErrorLabel->setStyleSheet("color: red;"); // Set text color to red
+    if (params[3].length() < 6 && !params[3].isEmpty()) {
+        errorLabels.at(3)->setText("Password must be at least 6 characters long.");
+        errorLabels.at(3)->setVisible(true);
+        hasError = true;
     }
-    else{
-        confirmPasswordErrorLabel->clear();
-        confirmPasswordErrorLabel->setVisible(false);
+
+    if (params[4] != params[3] && !params[4].isEmpty()) {
+        errorLabels.at(4)->setText("Passwords do not match.");
+        errorLabels.at(4)->setVisible(true);
+        hasError = true;
     }
+
+    setError(hasError);
 }

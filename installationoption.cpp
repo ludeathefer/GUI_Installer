@@ -38,24 +38,17 @@ void InstallationOption::loadUi()
 
     optionsLayout->addWidget(createDivider());
 
-    QRadioButton *option1 = new QRadioButton("Erase disk and install Radarch", this);
+    QRadioButton *option1 = new QRadioButton("Automatic Installation", this);
     option1->setFont(optionFont);
     radioGroup->addButton(option1, 1);
     optionsLayout->addWidget(option1);
 
     optionsLayout->addWidget(createDivider());
 
-    QRadioButton *option2 = new QRadioButton("Install Radarch alongside your OS", this);
+    QRadioButton *option2 = new QRadioButton("Manual Installation", this);
     option2->setFont(optionFont);
     radioGroup->addButton(option2, 2);
     optionsLayout->addWidget(option2);
-
-    optionsLayout->addWidget(createDivider());
-
-    QRadioButton *option3 = new QRadioButton("Manual Installation", this);
-    option3->setFont(optionFont);
-    radioGroup->addButton(option3, 3);
-    optionsLayout->addWidget(option3);
 
     optionsLayout->addWidget(createDivider());
 

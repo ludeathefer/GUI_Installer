@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QProcess>
 #include <QDebug>
+#include <QScrollArea>
 
 Console::Console(QWidget *parent)
     : QWidget(parent)
@@ -22,7 +23,6 @@ Console::~Console()
 
 void Console::loadUi()
 {
-    qDebug() << "Console Loaded.";
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QPalette palette = QPalette();
     palette.setColor(QPalette::Window, Qt::black);
@@ -47,11 +47,28 @@ void Console::loadUi()
     line1->setFrameShadow(QFrame::Sunken);
     line1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     mainLayout->addWidget(line1);;
-    mainLayout->addStretch();
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setPalette(palette);
 
-    mainLayout->addWidget(scriptOutput);
+    // Console output
+    scriptOutput = new QLabel();
+    scriptOutput->setWordWrap(true);
+    scriptOutput->setTextInteractionFlags(Qt::TextSelectableByMouse);  // Allow text selection
+    scriptOutput->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    QPalette outputPalette;
+    outputPalette.setColor(QPalette::WindowText, Qt::white);
+    scriptOutput->setPalette(outputPalette);
 
-    mainLayout->addStretch();
+    // Container widget for scrolling
+    QWidget *scrollWidget = new QWidget();
+    QVBoxLayout *scrollLayout = new QVBoxLayout(scrollWidget);
+    scrollLayout->addWidget(scriptOutput);
+    scrollLayout->addStretch();
+
+    scrollArea->setWidget(scrollWidget);
+
+    mainLayout->addWidget(scrollArea);
 }
 
 void Console::extractScript()
@@ -84,7 +101,7 @@ void Console::onExecuteScript(int currentPageIndex, QStringList params)
 {
     QProcess *process = new QProcess(this);
     connect(process, &QProcess::readyReadStandardOutput, [=]() {
-        QString output = process->readAllStandardOutput();
+        QString output = "$ : " + process->readAllStandardOutput();
         output.prepend(scriptOutput->text());
         scriptOutput->setText(output);
     });

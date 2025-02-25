@@ -2,20 +2,21 @@
     #define CREATEACCOUNT_H
 
     #include <QLabel>
-
+    #include <QVBoxLayout>
+    #include <QLineEdit>
     #include "page.h"
 
     class CreateAccount : public Page
     {
     public:
         explicit CreateAccount(QStackedWidget *parent = nullptr);
+        void validateFields();
 
     private:
         void loadUi();
-        QLabel *passwordErrorLabel;       // Pointer declaration
-        QLabel *confirmPasswordErrorLabel;
-        void passwordFieldChanged(const QString &password);//, const QLabel &passwordLabel);
-        void reEnterPasswordFieldChanged(const QString &passwordAgain);//, const QLabel &passwordAgainLabel);
+        QList<QLabel*> errorLabels;
+
+        QLineEdit* createInputField(const QString &labelText, QVBoxLayout *layout, QFont *labelFont, int paramIndex, bool isPassword = false);
     };
 
     #endif // CREATEACCOUNT_H

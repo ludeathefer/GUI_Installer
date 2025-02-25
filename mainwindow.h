@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "console.h"
+#include "page.h"
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QQueue>
@@ -20,11 +21,14 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+signals:
+    void nextClicked();
 
 private:
     Ui::MainWindow *ui;
     QStackedWidget *stackedWidget;
     Console *console;
+    Page *currentPage;
 
     void maximizeWindow();
     void loadUi();

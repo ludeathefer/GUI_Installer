@@ -16,6 +16,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -58,9 +59,12 @@ void MainWindow::loadUi()
     DiskPartitions *diskPartitions = new DiskPartitions(stackedWidget);
 
     stackedWidget->addWidget(welcome);
+    currentPage = qobject_cast<Page*>(stackedWidget->currentWidget());
+
     stackedWidget->addWidget(installationOption);
     stackedWidget->addWidget(installationType);
     stackedWidget->addWidget(createAccount);
+
     stackedWidget->addWidget(systemLocalization);
     stackedWidget->addWidget(diskPartitions);
 
@@ -79,26 +83,6 @@ void MainWindow::loadUi()
     buttonsLayout->addWidget(next);
     buttonsLayout->addWidget(cancel);
 
-    connect(stackedWidget, &QStackedWidget::currentChanged, this, [=](int index) {
-        back->setEnabled(index > 0);
-
-        int maxIndex = stackedWidget->count() - 1;
-        next->setText(index == maxIndex ? "Finish" : "Next");
-
-        if (index > 0) {
-            stackedWidget->setMaximumWidth(halfWidth);
-            mainLayout->setStretch(0, 1);
-            mainLayout->setStretch(1, 1);
-        } else {
-            stackedWidget->setMaximumWidth(windowWidth);
-            mainLayout->setStretch(0, 0);
-            mainLayout->setStretch(1, 0);
-        }
-        console->setVisible(index > 0);
-    });
-
-    // stackedWidget->setCurrentWidget(diskPartitions);
-
     QFrame *line1 = new QFrame();
     line1->setFrameShape(QFrame::HLine);
     line1->setFrameShadow(QFrame::Sunken);
@@ -115,28 +99,61 @@ void MainWindow::loadUi()
     mainLayout->addLayout(consoleLayout);
     mainLayout->addLayout(stackedWidgetLayout);
 
+    connect(stackedWidget, &QStackedWidget::currentChanged, this, [=](int index) {
+        currentPage = qobject_cast<Page*>(stackedWidget->currentWidget());
+        next->setEnabled(!currentPage->error);
+
+        if (index == 3)
+            connect(this, &MainWindow::nextClicked, createAccount, &CreateAccount::validateFields);
+
+        connect(currentPage, &Page::errorChanged, this, [=](bool changedError) {
+            next->setEnabled(!changedError);
+        });
+
+        back->setEnabled(index > 0);
+
+        int maxIndex = stackedWidget->count() - 1;
+        next->setText(index == maxIndex ? "Finish" : "Next");
+
+        if (index > 0) {
+            stackedWidget->setMaximumWidth(halfWidth);
+            mainLayout->setStretch(0, 1);
+            mainLayout->setStretch(1, 1);
+        } else {
+            stackedWidget->setMaximumWidth(windowWidth);
+            mainLayout->setStretch(0, 0);
+            mainLayout->setStretch(1, 0);
+        }
+        console->setVisible(index > 0);
+    });
 }
 
 void MainWindow::executeScript()
 {
     int currentIndex = stackedWidget->currentIndex();
-    Page *page = qobject_cast<Page*>(stackedWidget->currentWidget());
-    qDebug() << page->params;
-    console->onExecuteScript(currentIndex, page->params);
+    qDebug() << currentPage->params;
+    console->onExecuteScript(currentIndex, currentPage->params);
 }
 
 void MainWindow::onBackClick()
 {
-    executeScript();
     int currentIndex = stackedWidget->currentIndex();
+    disconnect(currentPage, &Page::errorChanged, nullptr, nullptr);
     stackedWidget->setCurrentIndex(currentIndex - 1);
 }
 
 void MainWindow::onNextClick()
 {
-    executeScript();
     int currentIndex = stackedWidget->currentIndex();
     int maxIndex = stackedWidget->count() - 1;
+
+    emit nextClicked();
+    if (currentPage->error)
+        return;
+
+    disconnect(currentPage, &Page::errorChanged, nullptr, nullptr);
+    executeScript();
+
     if(currentIndex != maxIndex)
         stackedWidget->setCurrentIndex(currentIndex + 1);
     else
@@ -145,5 +162,9 @@ void MainWindow::onNextClick()
 
 void MainWindow::onCancelClick()
 {
-    close();
+    int ret = QMessageBox::warning(this, "Cancel Installation", "Are you sure you want to cancel? You will have to start over.", QMessageBox::Yes | QMessageBox::No);
+    if (ret == QMessageBox::Yes) {
+        close();
+    }
+
 }
