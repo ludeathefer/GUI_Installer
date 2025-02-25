@@ -42,7 +42,7 @@ void DiskPartitions::loadUi()
     mainLayout->addStretch();
 
     partitionTable = new QTreeWidget(this);
-    QStringList partitionTableHeaders = {"Partition", "Size", "Type", "FSType", ""};
+    QStringList partitionTableHeaders = {"Partition", "Size", "Type", "FSType", "Mount point"};
     partitionTable->setColumnCount(5);
     partitionTable->setHeaderLabels(partitionTableHeaders);
     populatePartitions();
@@ -86,15 +86,14 @@ void DiskPartitions::populatePartitions()
     if (devices.isEmpty()) return;
 
     QJsonObject sda = devices.first().toObject();
-    double totalSize = sda["size"].toDouble(); // Total disk size in bytes
+    double totalSize = sda["size"].toDouble();
     double usedSize = 0.0;
     QTreeWidgetItem *parentItem = new QTreeWidgetItem(partitionTable);
     parentItem->setText(0, "/dev/sda");
     parentItem->setText(1, QString::number(sda["size"].toDouble() / (1024 * 1024)) + " MB");
     parentItem->setText(2, sda["type"].toString());
     parentItem->setText(3, sda["fstype"].toString());
-    parentItem->setText(4, "");
-
+    parentItem->setText(3, "");
     partitionTable->addTopLevelItem(parentItem);
 
     if (sda.contains("children"))
@@ -110,15 +109,14 @@ void DiskPartitions::populatePartitions()
             childItem->setText(2, partObj["type"].toString());
             childItem->setText(3, partObj["fstype"].toString());
             childItem->setText(4, partObj["mountpoint"].toString().isEmpty() ? "Not Mounted" : partObj["mountpoint"].toString());
-
             parentItem->addChild(childItem);
         }
     }
+
     availableSpace = (totalSize - usedSize) / (1024 * 1024);
     partitionTable->expandAll();
     partitionTable->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
-
 
 void DiskPartitions::addPartition(double availableSpace) {
     QDialog* dialog = new QDialog();
@@ -144,8 +142,6 @@ void DiskPartitions::addPartition(double availableSpace) {
     typeLayout->addWidget(typeComboBox);
     layout->addLayout(typeLayout);
 
-
-    //
     QHBoxLayout* mountLayout = new QHBoxLayout();
     QLabel* mountLabel = new QLabel("Mount Point:", dialog);
     QLineEdit* mountEdit = new QLineEdit(dialog);
@@ -190,7 +186,8 @@ void DiskPartitions::addPartition(double availableSpace) {
         params[0] = size;
         params[1] = fstype;
         params[2] = mountPoint;
-
+        // QString type = typeComboBox->currentText();
+        // QString mountPoint = mountEdit->text();
         // QTreeWidgetItem* newItem = new QTreeWidgetItem(partitionTable);
         // newItem->setText(0, name);
         // newItem->setText(1, "");  // Size can be set later if needed
@@ -272,3 +269,4 @@ void DiskPartitions::unallocatePartition(){
     //     QMessageBox::critical(this, "Error", "Failed to unallocate the partition.");
     // }
 }
+

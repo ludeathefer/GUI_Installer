@@ -23,7 +23,16 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(GUI_Installer
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-
+        welcome.h welcome.cpp
+        installationtype.h installationtype.cpp
+        installationoption.h installationoption.cpp
+        console.h console.cpp
+        installationscript.sh
+        resources.qrc
+        page.h page.cpp
+        createaccount.h createaccount.cpp
+        systemlocalization.h systemlocalization.cpp
+        diskpartitions.h diskpartitions.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET GUI_Installer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
