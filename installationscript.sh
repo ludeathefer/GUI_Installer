@@ -33,6 +33,7 @@ installed() {
 
 
 partitionDisks() {
+    local DRIVE="/dev/sda"
     echo "Partitioning the disks"
     # Creating new GPT partition
     parted --script "$DRIVE" mklabel gpt
@@ -79,40 +80,76 @@ configureSystem() {
     cp --dereference /etc/resolv.conf /mnt/etc/resolv.conf
     # Chrooting into new system
     arch-chroot /mnt /bin/bash <<EOF
-        # Setting the timezone
+        echo Setting the timezone
         ln -sf /usr/share/zoneinfo/"$8" /etc/localtime
-        # Generating locale
-        echo "$9" > /etc/locale.gen
+        hwclock --systohc
+        echo Generating locale
+        echo "$9" >> /etc/locale.gen
         locale-gen
-        # Setting the hostname
-        echo "$2" > /etc/hostname
-        # Setting root password
-        echo -en "$4\n$5" | passwd
-        # Installing grub and efibootmgr
-        pacman -Sy --noconfirm grub efibootmgr
-        # Initializing GRUB
+        echo Setting the hostname
+        echo "$3" > /etc/hostname
+        echo Creating new user
+        useradd -m -G wheel -s /bin/bash "$2"
+        echo "$2:$4" | chpasswd
+        echo Installing sudo
+        pacman -Syu --noconfirm sudo --verbose
+        echo Granting sudo privileges
+        echo "$2 ALL=(ALL) ALL" >> /etc/sudoers
+        echo Installing grub and efibootmgr
+        pacman -Syu --noconfirm grub efibootmgr --verbose
+        echo Initializing GRUB
         grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
-        # Generating GRUB config
+        echo Generating GRUB config
         grub-mkconfig -o /boot/grub/grub.cfg
-        # Enabling network manager on boot
+        echo Enabling network manager on boot
         systemctl enable NetworkManager.service
 EOF
 }
 
-unmount() {
-    echo "Unmounting /mnt"
-    unmount -R /mnt
+addingGUIConfig() {
+arch-chroot /mnt /bin/bash <<EOF
+    echo Installing Plasma and SDDM
+    pacman -Syu --noconfirm plasma dolphin konsole sddm --verbose
+
+    echo Enabling SDDM
+    systemctl enable sddm.service
+EOF
+    echo "Copying user configuration files"
+    cp -r /theme-to-copy/. /mnt/home/$1/
+    cp -r /usr-to-copy/. /mnt/usr/
+    cp -r /etc-to-copy/. /mnt/etc/
 }
 
 
+unmount() {
+    echo "Unmounting /mnt"
+    umount -R /mnt
+    reboot
+}
+
+manualPartitionDisks() {
+    echo
+}
+
 minimalInstall() {
+    echo "Minimal install detected"
     partitionDisks
     formatPartitions
     mountFileSystems
     installEssentialPackages
     configureSystem "$@"
     unmount
-    echo
+}
+
+normalInstall() {
+    echo "Normal install detected"
+    partitionDisks
+    formatPartitions
+    mountFileSystems
+    installEssentialPackages
+    configureSystem "$@"
+    addingGUIConfig "$2"
+    unmount
 }
 
 installing() {
@@ -120,10 +157,11 @@ installing() {
     echo "$@"
     echo
 
-    if [ $1 -eq 1 ] -a [ $2 -eq 1]
-    then
-        shift
-        shift
+    if [ "$1" -eq 1 ] && [ "$2" -eq 1 ]; then
+        shift 2
+        normalInstall "$@"
+    elif [ "$1" -eq 2 ] && [ "$2" -eq 1 ]; then
+        shift 2
         minimalInstall "$@"
     fi
 

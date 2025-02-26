@@ -20,6 +20,7 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QProcess>
+#include <QFile>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -28,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     maximizeWindow();
     paramsStore.resize(6);
+    extractConfig();
     loadUi();
 }
 
@@ -101,13 +103,21 @@ void MainWindow::loadUi()
     console->setVisible(false);
     console->setMaximumWidth(halfWidth);
     consoleLayout->addWidget(console);
-\
+
     mainLayout->addLayout(consoleLayout);
+
+    QFrame *separator = new QFrame();
+    separator->setFrameShape(QFrame::VLine);
+    separator->setFrameShadow(QFrame::Sunken);
+    separator->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    separator->setVisible(false);
+
+    mainLayout->addWidget(separator);
+
     mainLayout->addLayout(stackedWidgetLayout);
 
     connect(stackedWidget, &QStackedWidget::currentChanged, this, [=](int index) {
         currentPage = qobject_cast<Page*>(stackedWidget->currentWidget());
-
 
         if (index == 4)
         {
@@ -134,6 +144,7 @@ void MainWindow::loadUi()
             mainLayout->setStretch(0, 0);
             mainLayout->setStretch(1, 0);
         }
+        separator->setVisible(index > 0);
         console->setVisible(index > 0);
     });
 }
@@ -227,4 +238,19 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->accept();
     } else
         event->ignore();
+}
+
+void MainWindow::extractConfig()
+{
+    QString sddmConfigPath = ":/config/sddm.conf";
+    QFile sddmConfigFile(sddmConfigPath);
+
+    if (sddmConfigFile.open(QIODevice::ReadOnly)) {
+        QFile outputFile("/tmp/sddm.conf");
+        if (outputFile.open(QIODevice::WriteOnly)) {
+            outputFile.write(sddmConfigFile.readAll());
+            outputFile.close();
+        }
+        sddmConfigFile.close();
+    }
 }

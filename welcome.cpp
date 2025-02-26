@@ -32,4 +32,6 @@ void Welcome::loadUi()
     description->setAlignment(Qt::AlignHCenter);
     description->setFont(descriptionFont);
     mainLayout->addWidget(description);
+
+    mainLayout->addStretch();
 }

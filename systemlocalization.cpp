@@ -138,7 +138,7 @@ QHash<QString, QString> SystemLocalization::getLocales()
 
     for (const QLocale &locale : locales) {
         QString displayName = QLocale::languageToString(locale.language()) + " (" + QLocale::territoryToString(locale.territory()) + ")";
-        QString localeCode = locale.name();
+        QString localeCode = locale.name() + ".UTF-8 UTF-8";
         localeMap.insert(displayName, localeCode);
     }
 

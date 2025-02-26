@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QProcess>
+#include <QScrollArea>
 
 class Console : public QWidget
 {
@@ -16,6 +17,7 @@ public:
 private:
     QString scriptPath;
     QLabel *scriptOutput;
+    QScrollArea *scrollArea;
 
     void loadUi();
     void extractScript();

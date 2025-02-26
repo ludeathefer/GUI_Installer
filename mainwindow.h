@@ -38,6 +38,7 @@ private:
     void loadUi();
     void executeScript(QStringList params);
     void closeEvent(QCloseEvent *event);
+    void extractConfig();
 
 private slots:
     void onNextClick();

@@ -10,14 +10,13 @@ class DiskPartitions : public Page
 public:
     QTreeWidget* partitionTable;
     DiskPartitions(QStackedWidget *parent = nullptr);
-    double availableSpace;
+
 private:
     void loadUi();
     void populatePartitions();
-    void addPartition(double availableSpace);
+    void addPartition();
     void deletePartition();
-    void shrinkPartition();
-    void unallocatePartition();
+    void modifyPartition();
 };
 
 #endif // DISKDiskPartitions_H

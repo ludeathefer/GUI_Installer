@@ -26,10 +26,16 @@ void Installing::loadUi()
     mainLayout->addWidget(createDivider());
     mainLayout->addStretch();
 
-    QLabel *description = new QLabel("Radarch is installing. Please wait until it completes.");
+    QLabel *description = new QLabel("Radarch is installing. Please wait until it completes. System will reboot automatically once the installation completes.");
     QFont descriptionFont;
-    descriptionFont.setPointSize(14);
+    descriptionFont.setPointSize(12);
     description->setAlignment(Qt::AlignHCenter);
     description->setFont(descriptionFont);
     mainLayout->addWidget(description);
+    description->setWordWrap(true);
+    description->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    description->setMaximumWidth(300);
+    mainLayout->addWidget(description, 0, Qt::AlignHCenter);
+
+    mainLayout->addStretch();
 }

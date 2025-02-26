@@ -7,7 +7,7 @@
 #include <QFile>
 #include <QProcess>
 #include <QDebug>
-#include <QScrollArea>
+#include <QScrollBar>
 
 Console::Console(QWidget *parent)
     : QWidget(parent)
@@ -25,7 +25,7 @@ void Console::loadUi()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QPalette palette = QPalette();
-    palette.setColor(QPalette::Window, Qt::black);
+    palette.setColor(QPalette::Window, QColor(20, 20, 20, 1));
     setAutoFillBackground(true);
     setPalette(palette);
 
@@ -47,7 +47,7 @@ void Console::loadUi()
     line1->setFrameShadow(QFrame::Sunken);
     line1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     mainLayout->addWidget(line1);;
-    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollArea->setPalette(palette);
 
@@ -98,18 +98,21 @@ void Console::extractScript()
 void Console::onExecuteScript(int currentPageIndex, QStringList params, QProcess *process)
 {
     connect(process, &QProcess::readyReadStandardOutput, [=]() {
-        QString output = "$ : " + process->readAllStandardOutput() + '\n';
-        output.prepend(scriptOutput->text());
-        scriptOutput->setText(output);
+        QString output = process->readAllStandardOutput();
+        QString formattedOutput = "<span style='color:white;'>$ : " + output + "</span><br><br>";
+        scriptOutput->setText(scriptOutput->text() + formattedOutput);
+
+        QScrollBar *scrollBar = scrollArea->verticalScrollBar();
+        scrollBar->setValue(scrollBar->maximum());
     });
 
     connect(process, &QProcess::readyReadStandardError, [=]() {
         QString errorOutput = process->readAllStandardError();
-        scriptOutput->setText("Error: " + errorOutput);
-        QPalette errorPalette = QPalette();
-        errorPalette.setColor(QPalette::WindowText, Qt::red);
-        scriptOutput->setPalette(errorPalette);
+        QString formattedError = "<span style='color:red;'>Error: " + errorOutput + "</span><br><br>";
+        scriptOutput->setText(scriptOutput->text() + formattedError);
 
+        QScrollBar *scrollBar = scrollArea->verticalScrollBar();
+        scrollBar->setValue(scrollBar->maximum());
     });
 
     process->setProgram("/bin/bash");
